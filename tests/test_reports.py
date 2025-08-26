@@ -1,29 +1,29 @@
+from datetime import datetime
+from unittest.mock import patch
+from reports import date_three_months
 
 
-
-def spending_by_category(transactions: pd.DataFrame,
-                         category: str,
-                         date: Optional[str] = None) -> pd.DataFrame:
-    """Функция "Траты по категории"
-    принимает на вход: датафрейм с транзакциями, название категории,
-    опциональную дату (если дата не передана, то берется текущая дата),
-    а возвращает траты по заданной категории за последние три месяца (от переданной даты)"""
-    pass
+"""Тестируем вычисление даты три месяца назад"""
 
 
-def spending_by_weekday(transactions: pd.DataFrame,
-                        date: Optional[str] = None) -> pd.DataFrame:
-    """Функция "Траты по дням недели"
-    принимает на вход: датафрейм с транзакциями, опциональную дату.
-    Если дата не передана, то берется текущая дата.
-    Возвращает средние траты в каждый из дней недели за последние три месяца (от переданной даты)"""
-    pass
+def test_regular_case():
+    with patch("reports.datetime") as mock_datetime:
+        mock_datetime.now.return_value = datetime(2024, 5, 15)
+        result = date_three_months()
+        expected = datetime(2024, 2, 1)
+        assert result == expected
 
 
-def spending_by_workday(transactions: pd.DataFrame,
-                        date: Optional[str] = None) -> pd.DataFrame:
-    """Функция "Траты в рабочий/выходной день"
-    принимает на вход: датафрейм с транзакциями, опциональную дату.
-    Если дата не передана, то берется текущая дата.
-    Ыыводит средние траты в рабочий и в выходной день за последние три месяца (от переданной даты)."""
-    pass
+def test_year_transition():
+    with patch("reports.datetime") as mock_datetime:
+        mock_datetime.now.return_value = datetime(2024, 2, 15)
+        result = date_three_months()
+        expected = datetime(2023, 11, 1)
+        assert result == expected
+
+
+def test_always_first_day():
+    with patch("reports.datetime") as mock_datetime:
+        mock_datetime.now.return_value = datetime(2024, 3, 31)
+        result = date_three_months()
+        assert result.day == 1
