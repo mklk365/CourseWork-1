@@ -1,5 +1,5 @@
 import pandas as pd
-import  os
+import os
 import logging
 
 
@@ -24,6 +24,7 @@ utils_logger.addHandler(file_handler)
 # Принудительно пишем тестовое сообщение
 utils_logger.info("Логгер инициализирован!")
 
+
 def read_excel_data(file_path: str = None) -> pd.DataFrame:
     """Функция принимает XLSX-файл и возвращает датафрейм
     с данными о финансовых транзакциях"""
@@ -43,4 +44,3 @@ def read_excel_data(file_path: str = None) -> pd.DataFrame:
     except Exception as e:
         utils_logger.error(f"Ошибка при чтении XLSX файла: {e}")
         return pd.DataFrame()  # Возвращаем пустой DataFrame
-

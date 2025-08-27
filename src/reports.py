@@ -25,6 +25,18 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
         print("Не указана категория")
         return pd.DataFrame()
 
+    # Преобразуем даты в данных
+    transactions = transactions.copy()  # Создаем копию чтобы не менять оригинал
+    transactions['Дата операции'] = pd.to_datetime(
+        transactions['Дата операции'],
+        format="%d.%m.%Y %H:%M:%S",
+        dayfirst=True,
+        errors='coerce'
+    )
+
+    # Удаляем строки с некорректными датами
+    transactions = transactions.dropna(subset=['Дата операции'])
+
     if date is None:
         end_date = datetime.now()
     else:
@@ -32,11 +44,13 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
     start_date = date_three_months()
 
+    # Теперь фильтруем по уже преобразованным датам
     filtered_transactions = transactions[
-        (transactions["category"] == category)
-        & (pd.to_datetime(transactions["date"]) >= start_date)
-        & (pd.to_datetime(transactions["date"]) <= end_date)
+        (transactions["Категория"] == category)
+        & (transactions["Дата операции"] >= start_date)
+        & (transactions["Дата операции"] <= end_date)
         ]
+
     return filtered_transactions
 
 

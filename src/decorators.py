@@ -1,6 +1,8 @@
 from datetime import datetime
 from functools import wraps
 import pandas as pd
+import os
+
 
 def create_report(filename: str = "report"):
     """Декоратор для функций-отчетов, который записывает в файл результат,
@@ -13,6 +15,11 @@ def create_report(filename: str = "report"):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
 
+            # Определяем путь к папке data
+            PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+            os.makedirs(DATA_DIR, exist_ok=True)  # Создаем папку если нет
+
             # Определяем имя файла
             if filename is None:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -20,9 +27,12 @@ def create_report(filename: str = "report"):
             else:
                 report_filename = f"{filename}.txt"
 
+            # Полный путь к файлу в папке data
+            report_filepath = os.path.join(DATA_DIR, report_filename)
+
             # Записываем результат в файл
             try:
-                with open(report_filename, 'w', encoding='utf-8') as f:
+                with open(report_filepath, 'w', encoding='utf-8') as f:
                     f.write(f"Отчет сгенерирован: {datetime.now()}\n")
                     f.write(f"Функция: {func.__name__}\n")
                     f.write("=" * 50 + "\n")
@@ -39,7 +49,7 @@ def create_report(filename: str = "report"):
 
                     f.write("\n" + "=" * 50)
 
-                print(f"Отчет сохранен в файл: {report_filename}")
+                print(f"Отчет сохранен в файл: {report_filepath}")
 
             except Exception as e:
                 print(f"Ошибка при записи отчета: {e}")
